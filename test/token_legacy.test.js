@@ -55,7 +55,8 @@ describe("Token verification for legacy install hook using symmetric signing wit
                 adapter: "teststore",
                 type: "memory"
               },
-              hosts: [helper.productBaseUrl]
+              hosts: [helper.productBaseUrl],
+              localBaseUrl: helper.addonBaseUrl
             }
           }
         },

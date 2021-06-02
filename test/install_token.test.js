@@ -7,6 +7,7 @@ const helper = require("./test_helper");
 const ac = require("../index");
 const logger = require("./logger");
 const nock = require("nock");
+const { isToken } = require("typescript");
 
 const app = express();
 let addon = {};
@@ -56,7 +57,8 @@ describe("Token verification using RS256 asymmetric signing", () => {
                 adapter: "teststore",
                 type: "memory"
               },
-              hosts: [helper.productBaseUrl]
+              hosts: [helper.productBaseUrl],
+              localBaseUrl: helper.addonBaseUrl
             }
           }
         },
