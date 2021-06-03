@@ -114,16 +114,16 @@ type ModifyArgsOutput<
 type HostClientArgs<TOptions extends ModifyArgsOptions, TCallback extends Callback> = [
     TOptions, Headers, TCallback, string
 ];
-declare class HostClient {
-    constructor(addon: AddOn, context: { clientKey: string, userAccountId?: string } | Request, clientKey: string);
-    addon: AddOn;
+declare class HostClientClass {
+    constructor(addon: AddOnClass, context: { clientKey: string, userAccountId?: string } | Request, clientKey: string);
+    addon: AddOnClass;
     context: boolean;
     clientKey: string;
     oauth2: any;
     userKey?: string; // for impersonatingClient
 
-    asUser(userKey: string): HostClient;
-    asUserByAccountId: (userAccountId: string|number) => HostClient;
+    asUser(userKey: string): HostClientClass;
+    asUserByAccountId: (userAccountId: string|number) => HostClientClass;
     createJwtPayload: (req: Request) => string;
     defaults(): Request;
     cookie(): Cookie;
@@ -139,7 +139,7 @@ declare class HostClient {
     patch: <T = any>(options: any, callback?: RequestCallback) => Promise<T>;
 }
 
-declare class AddOn extends EventEmitter {
+declare class AddOnClass extends EventEmitter {
     constructor(app: express.Application, opts?: Options, logger?: Console, fileNames?: FileNames, callback?: () => void);
     constructor(app: express.Application);
     
@@ -191,8 +191,8 @@ declare class AddOn extends EventEmitter {
      */
 
 
-    httpClient(reqOrOpts: { clientKey: string, userAccountId: string }): HostClient;
-    httpClient(reqOrOpts: express.Request): HostClient;
+    httpClient(reqOrOpts: { clientKey: string, userAccountId: string }): HostClientClass;
+    httpClient(reqOrOpts: express.Request): HostClientClass;
 }
 interface Opts {config: {development?: Partial<ConfigOptions>, production?: Partial<ConfigOptions>}}
 
@@ -201,10 +201,10 @@ interface FileNames {
     configFileName?: string;
 }
 
-declare function AddOnFactory(app: express.Application, opts?: Opts, logger?: Console, fileNames?: FileNames | Callback, callback?: Callback): AddOn;
+declare function AddOnFactory(app: express.Application, opts?: Opts, logger?: Console, fileNames?: FileNames | Callback, callback?: Callback): AddOnClass;
 
 declare namespace AddOnFactory {
-    export type HostClient = typeof HostClient;
+    export type HostClient = HostClientClass;
     export interface ClientInfo {
         key: string,
         clientKey: string,
@@ -218,7 +218,7 @@ declare namespace AddOnFactory {
         eventType: string,
         oauthClientId?: string
     }
-    export type AddOn = typeof AddOn;
+    export type AddOn = AddOnClass;
     export type AddOnFactory = typeof AddOnFactory;
 }
 
