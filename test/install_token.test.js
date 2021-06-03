@@ -7,7 +7,6 @@ const helper = require("./test_helper");
 const ac = require("../index");
 const logger = require("./logger");
 const nock = require("nock");
-const { isToken } = require("typescript");
 
 const app = express();
 let addon = {};
