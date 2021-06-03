@@ -1,5 +1,8 @@
 # Atlassian Connect for Express.js Release Notes
 
+## 7.1.3
+* Fixed typescript definition
+
 ## 7.1.2
 * Removed `esModuleInterop` requirement from typescript typings
 
