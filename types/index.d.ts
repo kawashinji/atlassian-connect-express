@@ -204,7 +204,7 @@ interface FileNames {
 declare function AddOnFactory(app: express.Application, opts?: Opts, logger?: Console, fileNames?: FileNames | Callback, callback?: Callback): AddOn;
 
 declare namespace AddOnFactory {
-    export type HostClient = typeof HostClient;
+    export type HostClient = InstanceType<typeof HostClient>;
     export interface ClientInfo {
         key: string,
         clientKey: string,
@@ -218,7 +218,7 @@ declare namespace AddOnFactory {
         eventType: string,
         oauthClientId?: string
     }
-    export type AddOn = typeof AddOn;
+    export type AddOn = InstanceType<typeof AddOn>;
     export type AddOnFactory = typeof AddOnFactory;
 }
 
