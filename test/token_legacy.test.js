@@ -49,7 +49,7 @@ describe("Token verification for legacy install hook using symmetric signing wit
         app,
         {
           config: {
-            signedInstall: false,
+            'signed-install': false,
             development: {
               store: {
                 adapter: "teststore",
