@@ -1,5 +1,8 @@
 # Atlassian Connect for Express.js Release Notes
 
+## 7.1.4
+* Update install lifecycle to check audience(app base url).
+
 ## 7.1.3
 * Fixed typescript definition
 
