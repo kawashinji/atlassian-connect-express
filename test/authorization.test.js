@@ -88,7 +88,7 @@ describe("authorizeJira", () => {
           mockPermissionClient(
             undefined,
             ["ADMINISTER"],
-            [{ permissions: ["ADMINISTER_PROJECTS"], projects: [projectId] }]
+            [{ permission: "ADMINISTER_PROJECTS", projects: [projectId] }]
           ),
         logger: {
           warn: () => {}

@@ -78,7 +78,7 @@ describe("isAuthorizedJira", () => {
     const mock = mockPermissionClient(
       undefined,
       [],
-      [{ permissions: ["ADMINISTER_PROJECTS"], projects: [10000] }]
+      [{ permission: "ADMINISTER_PROJECTS", projects: [10000] }]
     );
     return isAuthorizedJira(
       mock,
@@ -90,13 +90,37 @@ describe("isAuthorizedJira", () => {
     });
   });
 
+  it("returns true if multiple project permission matched", () => {
+    const mock = mockPermissionClient(
+      undefined,
+      [],
+      [
+        { permission: "ADMINISTER_PROJECTS", projects: [10000] },
+        { permission: "CREATE_ISSUES", projects: [10000] }
+      ]
+    );
+    return isAuthorizedJira(
+      mock,
+      testUserId,
+      [],
+      [
+        {
+          permissions: ["ADMINISTER_PROJECTS", "CREATE_ISSUES"],
+          projects: [10000]
+        }
+      ]
+    ).then(result => {
+      expect(result).toBe(true);
+    });
+  });
+
   it("returns true if project permission matched as strings", () => {
     // Connect context are passed as strings, but the API represents them as numbers
     // They should still match regardless
     const mock = mockPermissionClient(
       undefined,
       [],
-      [{ permissions: ["ADMINISTER_PROJECTS"], projects: [10000] }]
+      [{ permission: "ADMINISTER_PROJECTS", projects: [10000] }]
     );
     return isAuthorizedJira(
       mock,
@@ -112,7 +136,7 @@ describe("isAuthorizedJira", () => {
     const mock = mockPermissionClient(
       undefined,
       [],
-      [{ permissions: ["ADMINISTER_PROJECTS"], projects: [10000] }]
+      [{ permission: "ADMINISTER_PROJECTS", projects: [10000] }]
     );
     return isAuthorizedJira(
       mock,
@@ -128,7 +152,7 @@ describe("isAuthorizedJira", () => {
     const mock = mockPermissionClient(
       undefined,
       [],
-      [{ permissions: ["ADMINISTER_PROJECTS"], projects: [10000] }]
+      [{ permission: "ADMINISTER_PROJECTS", projects: [10000] }]
     );
     return isAuthorizedJira(
       mock,
@@ -147,7 +171,7 @@ describe("isAuthorizedJira", () => {
     const mock = mockPermissionClient(
       undefined,
       [],
-      [{ permissions: ["ADMINISTER_PROJECTS"], projects: [10000] }]
+      [{ permission: "ADMINISTER_PROJECTS", projects: [10000] }]
     );
     return isAuthorizedJira(
       mock,
@@ -163,7 +187,7 @@ describe("isAuthorizedJira", () => {
     const mock = mockPermissionClient(
       undefined,
       [],
-      [{ permissions: ["TRANSITION_ISSUES"], issues: [10000] }]
+      [{ permission: "TRANSITION_ISSUES", issues: [10000] }]
     );
     return isAuthorizedJira(
       mock,
@@ -179,7 +203,7 @@ describe("isAuthorizedJira", () => {
     const mock = mockPermissionClient(
       undefined,
       [],
-      [{ permissions: ["TRANSITION_ISSUES"], issues: [10000] }]
+      [{ permission: "TRANSITION_ISSUES", issues: [10000] }]
     );
     return isAuthorizedJira(
       mock,
