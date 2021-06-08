@@ -174,4 +174,25 @@ describe("isAuthorizedJira", () => {
       expect(result).toBe(false);
     });
   });
+
+  it("returns false if any project permission fail", () => {
+    const mock = mockPermissionClient(
+      undefined,
+      [],
+      [{ permissions: ["TRANSITION_ISSUES"], issues: [10000] }]
+    );
+    return isAuthorizedJira(
+      mock,
+      testUserId,
+      [],
+      [
+        {
+          permissions: ["TRANSITION_ISSUES", "ADMINISTER_PROJECTS"],
+          issues: [10000, 10001]
+        }
+      ]
+    ).then(result => {
+      expect(result).toBe(false);
+    });
+  });
 });
