@@ -92,6 +92,11 @@ type StringifiableRecord = Record<
 	Stringifiable | readonly Stringifiable[]
 >;
 
+type JiraPermissionsQuery = {
+    project?: string[]
+    global?: string[]
+}
+
 
 type Callback = (...arg: any[]) => void;
 
@@ -147,6 +152,7 @@ declare class AddOn extends EventEmitter {
     postInstallation(): (request: express.Request, response: express.Response) => void;
     middleware(): MiddlewareParameters;
     authenticate(skipQshVerification?: boolean): MiddlewareParameters;
+    authorizeJira(permissions: JiraPermissionsQuery): MiddlewareParameters;
     loadClientInfo(clientKey: string): Promise<AddOnFactory.ClientInfo>; 
     checkValidToken(): MiddlewareParameters | boolean;
 
