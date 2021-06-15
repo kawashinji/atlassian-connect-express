@@ -123,6 +123,12 @@ The `./config.json` file contains all of the settings for the add-on server. Thi
   // http://expressjs.com/guide.html#error-handling
   "expressErrorHandling": false,
 
+  // This allows your app to opt-in to asymmetric authentication for install callback.
+  // Available options for "signed-install" field: "enable", "disable", "force"
+  // Set to "disable" if you do not want your app to use asymmetric JWT authentication.
+  // To get the security benefit in advance, set this to "force" instead of "enable". 
+  "signed-install": "enable",
+
   // This is the default environment. To change your app to use
   // a different env, set NODE_ENV (http://expressjs.com/api.html#app.configure)
   "development": {
