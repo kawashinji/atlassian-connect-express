@@ -2,6 +2,7 @@
 
 ## 7.1.5
 * Add config to control whether to use secure install hook only.
+* Add authorization middleware for Jira and Confluence
 
 ## 7.1.4
 * Update install lifecycle to check audience(app base url).
