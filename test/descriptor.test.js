@@ -26,10 +26,7 @@ describe("Descriptor", () => {
     beforeAll(() => {
       app.set("env", "development");
       options.config.product = "bitbucket";
-      addon = ac(app, options, logger, {
-        descriptorFilename: "test/atlassian-connect.json",
-        configFileName: "config.json"
-      });
+      addon = ac(app, options, logger);
     });
 
     it("should not have unsupproted `apiMigrations` in the app descriptor", () => {
@@ -41,10 +38,7 @@ describe("Descriptor", () => {
   describe("With default configuration", () => {
     beforeAll(() => {
       app.set("env", "development");
-      addon = ac(app, options, logger, {
-        descriptorFilename: "test/atlassian-connect.json",
-        configFileName: "config.json"
-      });
+      addon = ac(app, options, logger);
     });
 
     it("should be parsed as an object", () => {
@@ -98,10 +92,7 @@ describe("Descriptor", () => {
         descriptor.key = targetKey;
         return descriptor;
       };
-      addon = ac(app, opts, logger, {
-        descriptorFilename: "test/atlassian-connect.json",
-        configFileName: "config.json"
-      });
+      addon = ac(app, opts, logger);
     });
 
     it("should process the descriptorTransformer when generating the descriptor", () => {
