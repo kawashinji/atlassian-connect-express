@@ -22,10 +22,29 @@ describe("Descriptor", () => {
     }
   };
 
+  describe("With bitbucket product", () => {
+    beforeAll(() => {
+      app.set("env", "development");
+      options.config.product = "bitbucket";
+      addon = ac(app, options, logger, {
+        descriptorFilename: "test/atlassian-connect.json",
+        configFileName: "config.json"
+      });
+    });
+
+    it("should not have unsupproted `apiMigrations` in the app descriptor", () => {
+      const { apiMigrations } = addon.descriptor;
+      expect(apiMigrations).toBeUndefined();
+    });
+  });
+
   describe("With default configuration", () => {
     beforeAll(() => {
       app.set("env", "development");
-      addon = ac(app, options, logger);
+      addon = ac(app, options, logger, {
+        descriptorFilename: "test/atlassian-connect.json",
+        configFileName: "config.json"
+      });
     });
 
     it("should be parsed as an object", () => {
@@ -79,7 +98,10 @@ describe("Descriptor", () => {
         descriptor.key = targetKey;
         return descriptor;
       };
-      addon = ac(app, opts, logger);
+      addon = ac(app, opts, logger, {
+        descriptorFilename: "test/atlassian-connect.json",
+        configFileName: "config.json"
+      });
     });
 
     it("should process the descriptorTransformer when generating the descriptor", () => {
