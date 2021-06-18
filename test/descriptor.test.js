@@ -4,7 +4,7 @@ const _ = require("lodash");
 const ac = require("../index");
 const logger = require("./logger");
 
-describe.skip("Descriptor", () => {
+describe("Descriptor", () => {
   let addon;
   const options = {
     config: {
