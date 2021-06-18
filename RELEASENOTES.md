@@ -1,5 +1,8 @@
 # Atlassian Connect for Express.js Release Notes
 
+## 7.1.6
+* Patch to remove an unsupported descriptor field for bitbucket apps.
+
 ## 7.1.5
 * Add config to control whether to use secure install hook only.
 * Add authorization middleware for Jira and Confluence
