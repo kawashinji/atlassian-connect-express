@@ -95,8 +95,12 @@ type StringifiableRecord = Record<
 type JiraPermissionsQuery = {
     project?: string[]
     global?: string[]
-}
+};
 
+type ConfluencePermissionsQuery = {
+    application?: string[]
+    content?: string
+};
 
 type Callback = (...arg: any[]) => void;
 
@@ -153,6 +157,7 @@ declare class AddOn extends EventEmitter {
     middleware(): MiddlewareParameters;
     authenticate(skipQshVerification?: boolean): MiddlewareParameters;
     authorizeJira(permissions: JiraPermissionsQuery): MiddlewareParameters;
+    authorizeConfluence(permissions: ConfluencePermissionsQuery): MiddlewareParameters;
     loadClientInfo(clientKey: string): Promise<AddOnFactory.ClientInfo>; 
     checkValidToken(): MiddlewareParameters | boolean;
 

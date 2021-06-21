@@ -123,6 +123,12 @@ The `./config.json` file contains all of the settings for the add-on server. Thi
   // http://expressjs.com/guide.html#error-handling
   "expressErrorHandling": false,
 
+  // This allows your app to opt-in to asymmetric authentication for install callback.
+  // Available options for "signed-install" field: "enable", "disable", "force"
+  // Set to "disable" if you do not want your app to use asymmetric JWT authentication.
+  // To get the security benefit in advance, set this to "force" instead of "enable". 
+  "signed-install": "enable",
+
   // This is the default environment. To change your app to use
   // a different env, set NODE_ENV (http://expressjs.com/api.html#app.configure)
   "development": {
@@ -386,6 +392,51 @@ module.exports = function(app, addon) {
 ```
 
 Simply adding the `addon.authenticate()` middleware will protect your resource.
+
+#### Authorizing requests
+
+If your app API accepts requests from the front-end using context JWTs, it's important to perform authorization checks.
+Atlassian Connect Express includes a basic middleware that leverages the [Jira get bulk permissions API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-permissions/#api-rest-api-3-permissions-check-post) and [Confluence check content permissions API](https://developer.atlassian.com/cloud/confluence/rest/api-group-content-permissions/#api-api-content-id-permission-check-post) to perform authorization checks based on the context JWT.
+
+For example to restrict an endpoint to Jira admins that are also project admins:
+
+```javascript
+module.exports = function(app, addon) {
+  app.get(
+    '/admin-resource',
+
+    [
+      addon.authenticate(true /* accept context JWTs */),
+      // only allow product admins that are also project admins
+      addon.authorizeJira({ global: ["ADMINISTER"], project: ["ADMINISTER_PROJECTS"] })
+    ],
+
+    function(req, res) {
+      res.render('protected');
+    }
+  );
+};
+```
+
+Similarly for Confluence, to restrict an endpoint to Confluence admins that also have permissions to read the current page:
+
+```javascript
+module.exports = function(app, addon) {
+  app.get(
+    '/admin-resource',
+
+    [
+      addon.authenticate(true /* accept context JWTs */),
+      // only allow product admins that also have access to read the current page
+      addon.authorizeConfluence({ application: ["administer"], content: "read" })
+    ],
+
+    function(req, res) {
+      res.render('protected');
+    }
+  );
+};
+```
 
 ### How to send a signed HTTP request from the iframe back to the add-on service
 
