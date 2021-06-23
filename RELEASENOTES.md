@@ -1,5 +1,9 @@
 # Atlassian Connect for Express.js Release Notes
 
+## 7.1.8
+* Remove lockfiles
+* Fixed typo in auth error message
+
 ## 7.1.7
 * Patch to remove an unsupported descriptor field for bitbucket apps.
 * Fixing minor bug which fails to check bitbucket apps
