@@ -74,7 +74,8 @@ interface Config {
 interface StoreAdapter {
     del(key: string, clientKey: string): Promise<void>;
     get(key: string, clientKey: string): Promise<any>;
-    set(key: string, clientKey: string): Promise<any>;
+    set(key: string, value: any, clientKey: string): Promise<any>;
+    getAllClientInfos(): Promise<AddOnFactory.ClientInfo>;
 }
 
 type MiddlewareParameters = (request: express.Request, response: express.Response, next: express.NextFunction) => void;
@@ -202,7 +203,7 @@ declare class AddOn extends EventEmitter {
      */
 
 
-    httpClient(reqOrOpts: { clientKey: string, userAccountId: string }): HostClient;
+    httpClient(reqOrOpts: { clientKey: string, userAccountId?: string }): HostClient;
     httpClient(reqOrOpts: express.Request): HostClient;
 }
 interface Opts {config: {development?: Partial<ConfigOptions>, production?: Partial<ConfigOptions>}}
