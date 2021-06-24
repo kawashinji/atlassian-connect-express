@@ -1,5 +1,9 @@
 # Atlassian Connect for Express.js Release Notes
 
+## 7.2.0
+
+* Add and adjust type signatures for store and client methods
+
 ## 7.1.8
 * Remove lockfiles
 * Fixed typo in auth error message
