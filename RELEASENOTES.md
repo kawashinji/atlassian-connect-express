@@ -1,5 +1,12 @@
 # Atlassian Connect for Express.js Release Notes
 
+## 7.3.0
+
+* TS type signature fix: HostClient#getAllClientInfos()
+* TS type signature addition: ConfigOptions#watch
+* TS type signature addition: HostClient#getUserBearerToken
+* TS type signature addition: addon.authenticateInstall()
+
 ## 7.2.0
 
 * Add and adjust type signatures for store and client methods
