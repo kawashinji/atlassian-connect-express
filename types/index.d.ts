@@ -49,6 +49,7 @@ interface ConfigOptions {
     hosts: string[];
     maxTokenAge: number;
     userAgent: string;
+    watch: boolean;
 }
 
 interface Config {
@@ -75,7 +76,7 @@ interface StoreAdapter {
     del(key: string, clientKey: string): Promise<void>;
     get(key: string, clientKey: string): Promise<any>;
     set(key: string, value: any, clientKey: string): Promise<any>;
-    getAllClientInfos(): Promise<AddOnFactory.ClientInfo>;
+    getAllClientInfos(): Promise<AddOnFactory.ClientInfo[]>;
 }
 
 type MiddlewareParameters = (request: express.Request, response: express.Response, next: express.NextFunction) => void;
@@ -124,6 +125,13 @@ type ModifyArgsOutput<
 type HostClientArgs<TOptions extends ModifyArgsOptions, TCallback extends Callback> = [
     TOptions, Headers, TCallback, string
 ];
+
+type BearerToken = {
+    access_token: string;
+    token_type: string;
+    expires_in: number;
+};
+
 declare class HostClient {
     constructor(addon: AddOn, context: { clientKey: string, userAccountId?: string } | Request, clientKey: string);
     addon: AddOn;
@@ -135,6 +143,8 @@ declare class HostClient {
     asUser(userKey: string): HostClient;
     asUserByAccountId: (userAccountId: string|number) => HostClient;
     createJwtPayload: (req: Request) => string;
+    getUserBearerToken: (scopes: string[], clientSettings: AddOnFactory.ClientInfo) => Promise<BearerToken>;
+
     defaults(): Request;
     cookie(): Cookie;
     jar(): CookieJar;
@@ -154,6 +164,7 @@ declare class AddOn extends EventEmitter {
     constructor(app: express.Application);
     
     verifyInstallation(): MiddlewareParameters;
+    authenticateInstall(): MiddlewareParameters;
     postInstallation(): (request: express.Request, response: express.Response) => void;
     middleware(): MiddlewareParameters;
     authenticate(skipQshVerification?: boolean): MiddlewareParameters;
@@ -232,6 +243,7 @@ declare namespace AddOnFactory {
     }
     export type AddOn = InstanceType<typeof AddOn>;
     export type AddOnFactory = typeof AddOnFactory;
+    export { BearerToken };
 }
 
 export = AddOnFactory;
