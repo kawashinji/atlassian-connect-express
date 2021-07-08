@@ -17,6 +17,7 @@ const CHECK_TOKEN_RESPONDER_PATH = "/check_token_responder";
 describe("Token verification using RS256 asymmetric signing", () => {
   let server;
   let useBodyParser = true;
+  const additionalBaseUrl = "https://allowed.base.url";
 
   function conditionalUseBodyParser(fn) {
     return function (req, res, next) {
@@ -58,7 +59,8 @@ describe("Token verification using RS256 asymmetric signing", () => {
                 type: "memory"
               },
               hosts: [helper.productBaseUrl],
-              localBaseUrl: helper.addonBaseUrl
+              localBaseUrl: helper.addonBaseUrl,
+              allowedBaseUrls: [additionalBaseUrl]
             }
           }
         },
@@ -289,6 +291,66 @@ describe("Token verification using RS256 asymmetric signing", () => {
           json: helper.installedPayload
         },
         (err, res) => {
+          expect(res.statusCode).toEqual(401);
+          resolve();
+        }
+      );
+    });
+  });
+
+  it("should check for additional allowed audience on install", () => {
+    return new Promise(resolve => {
+      request(
+        {
+          url: `${helper.addonBaseUrl}/installed`,
+          method: "POST",
+          json: _.extend({}, helper.installedPayload),
+          headers: {
+            Authorization: `JWT ${helper.createJwtTokenForInstall(
+              {
+                method: "POST",
+                path: "/installed"
+              },
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              additionalBaseUrl
+            )}`
+          }
+        },
+        (err, res) => {
+          expect(err).toBeNull();
+          expect(res.statusCode).toEqual(204);
+          resolve();
+        }
+      );
+    });
+  });
+
+  it("should check for invalid audience on install", () => {
+    return new Promise(resolve => {
+      request(
+        {
+          url: `${helper.addonBaseUrl}/installed`,
+          method: "POST",
+          json: _.extend({}, helper.installedPayload),
+          headers: {
+            Authorization: `JWT ${helper.createJwtTokenForInstall(
+              {
+                method: "POST",
+                path: "/installed"
+              },
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              "https://not.allowed.base.url"
+            )}`
+          }
+        },
+        (err, res) => {
+          expect(err).toBeNull();
           expect(res.statusCode).toEqual(401);
           resolve();
         }
