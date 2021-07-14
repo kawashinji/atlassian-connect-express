@@ -237,7 +237,7 @@ The `./config.json` file contains all of the settings for the add-on server. Thi
     },
 
     // If your app supports multiple baseUrls,
-    // additional baseUrls can be adedd here so that it can be used to
+    // additional baseUrls can be added here so that it can be used to
     // verify the `audience` claim during installation lifecycle callback.
     "allowedBaseUrls" : [
       "https://other-domain.herokuapp.com"
