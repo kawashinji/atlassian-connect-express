@@ -123,7 +123,7 @@ The `./config.json` file contains all of the settings for the add-on server. Thi
   // http://expressjs.com/guide.html#error-handling
   "expressErrorHandling": false,
 
-  // This allows your app to opt-in to asymmetric authentication for install callback.
+  // This allows your app to opt-in to asymmetric authentication for install/uninstall callback.
   // Available options for "signed-install" field: "enable", "disable", "force"
   // Set to "disable" if you do not want your app to use asymmetric JWT authentication.
   // To get the security benefit in advance, set this to "force" instead of "enable". 
@@ -235,6 +235,13 @@ The `./config.json` file contains all of the settings for the add-on server. Thi
       // URL to you through the environment, so we tell atlassian-connect-express to use that value.
       "url": "$DATABASE_URL"
     },
+
+    // If your app supports multiple baseUrls,
+    // additional baseUrls can be added here so that it can be used to
+    // verify the `audience` claim during installation lifecycle callback.
+    "allowedBaseUrls" : [
+      "https://other-domain.herokuapp.com"
+    ],
 
     // Make sure that your add-on can only be registered by the hosts on
     // these domains.
