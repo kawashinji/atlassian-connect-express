@@ -123,11 +123,9 @@ The `./config.json` file contains all of the settings for the add-on server. Thi
   // http://expressjs.com/guide.html#error-handling
   "expressErrorHandling": false,
 
-  // This allows your app to opt-in to asymmetric authentication for install/uninstall callback.
-  // Available options for "signed-install" field: "enable", "disable", "force"
-  // Set to "disable" if you do not want your app to use asymmetric JWT authentication.
-  // To get the security benefit in advance, set this to "force" instead of "enable". 
-  "signed-install": "enable",
+  // By setting this field to "force", your app will be forced to use RS256 algorithm when authenticating install/uninstall callbacks.
+  // Make sure to opt-in to signed-install feature from the app descriptor file(atlassian-connect.json) to get this security benefit in advance.
+  "signed-install": "force",
 
   // This is the default environment. To change your app to use
   // a different env, set NODE_ENV (http://expressjs.com/api.html#app.configure)
