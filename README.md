@@ -123,7 +123,7 @@ The `./config.json` file contains all of the settings for the add-on server. Thi
   // http://expressjs.com/guide.html#error-handling
   "expressErrorHandling": false,
 
-  // By setting this field to "force", your app will be forced to use only RS256 algorithm when authenticating install/uninstall callbacks.
+  // By setting this field to "force", your app will be forced to use RS256 algorithm when authenticating install/uninstall callbacks.
   // Make sure to opt-in to signed-install feature from the app descriptor file(atlassian-connect.json) to get this security benefit in advance.
   "signed-install": "force",
 
@@ -233,6 +233,13 @@ The `./config.json` file contains all of the settings for the add-on server. Thi
       // URL to you through the environment, so we tell atlassian-connect-express to use that value.
       "url": "$DATABASE_URL"
     },
+
+    // If your app supports multiple baseUrls,
+    // additional baseUrls can be added here so that it can be used to
+    // verify the `audience` claim during installation lifecycle callback.
+    "allowedBaseUrls" : [
+      "https://other-domain.herokuapp.com"
+    ],
 
     // Make sure that your add-on can only be registered by the hosts on
     // these domains.
