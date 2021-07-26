@@ -16,7 +16,7 @@ const waitOn = require("wait-on");
 const DynamoDbLocal = require("dynamodb-local");
 
 DynamoDbLocal.configureInstaller({
-  installPath: './dynamodblocal-bin'
+  installPath: "./dynamodblocal-bin"
 });
 
 describe.each([["sequelize"], ["mongodb"], ["redis"], ["dynamodb"]])(
