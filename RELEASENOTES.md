@@ -1,5 +1,8 @@
 # Atlassian Connect for Express.js Release Notes
 
+## 7.4.1
+* `addon.authenticateInstall` middleware supports uninstall hook sent from an old version.
+
 ## 7.4.0
 * Removed default opt-in to signed-install feature: Manually opt-in from the app descriptor
 * Support multiple baseUrls when verifying install callback audience claim. 
