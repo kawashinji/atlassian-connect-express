@@ -1,6 +1,9 @@
 # Atlassian Connect for Express.js Release Notes
 
-## 7.4.2
+## 7.4.4
+* TS type signature fix: AddOnFactory
+
+## 7.4.3
 * Add request context for installation middleware
 * Add test support for 1st party apps
 

@@ -25,7 +25,7 @@ interface Descriptor {
 
 interface Options {
     config: {
-        descriptorTransformer: (descriptor: Partial<Descriptor>, config: Config) => Descriptor
+        descriptorTransformer?: (descriptor: Partial<Descriptor>, config: Config) => Descriptor
     }
 }
 
@@ -224,7 +224,7 @@ interface FileNames {
     configFileName?: string;
 }
 
-declare function AddOnFactory(app: express.Application, opts?: Opts, logger?: Console, fileNames?: FileNames | Callback, callback?: Callback): AddOn;
+declare function AddOnFactory(app: express.Application, opts?: Options, logger?: Console, fileNames?: FileNames | Callback, callback?: Callback): AddOn;
 
 declare namespace AddOnFactory {
     export type HostClient = InstanceType<typeof HostClient>;
