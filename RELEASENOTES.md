@@ -1,5 +1,9 @@
 # Atlassian Connect for Express.js Release Notes
 
+## 7.4.2
+* Add request context for installation middleware
+* Add test support for 1st party apps
+
 ## 7.4.1
 * `addon.authenticateInstall` middleware supports uninstall hook sent from an old version.
 
