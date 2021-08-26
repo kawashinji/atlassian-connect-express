@@ -26,6 +26,8 @@ interface Descriptor {
 interface Options {
     config: {
         descriptorTransformer?: (descriptor: Partial<Descriptor>, config: Config) => Descriptor
+        development?: Partial<ConfigOptions>;
+        production?: Partial<ConfigOptions>;
     }
 }
 
@@ -217,7 +219,6 @@ declare class AddOn extends EventEmitter {
     httpClient(reqOrOpts: { clientKey: string, userAccountId?: string }): HostClient;
     httpClient(reqOrOpts: express.Request): HostClient;
 }
-interface Opts {config: {development?: Partial<ConfigOptions>, production?: Partial<ConfigOptions>}}
 
 interface FileNames {
     descriptorFilename?: string;
