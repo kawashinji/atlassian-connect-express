@@ -1,5 +1,19 @@
 # Atlassian Connect for Express.js Release Notes
 
+## 7.4.4
+* TS type signature fix: AddOnFactory
+
+## 7.4.3
+* Add request context for installation middleware
+* Add test support for 1st party apps
+
+## 7.4.1
+* `addon.authenticateInstall` middleware supports uninstall hook sent from an old version.
+
+## 7.4.0
+* Removed default opt-in to signed-install feature: Manually opt-in from the app descriptor
+* Support multiple baseUrls when verifying install callback audience claim. 
+
 ## 7.3.0
 
 * TS type signature fix: HostClient#getAllClientInfos()

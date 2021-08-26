@@ -123,11 +123,9 @@ The `./config.json` file contains all of the settings for the add-on server. Thi
   // http://expressjs.com/guide.html#error-handling
   "expressErrorHandling": false,
 
-  // This allows your app to opt-in to asymmetric authentication for install callback.
-  // Available options for "signed-install" field: "enable", "disable", "force"
-  // Set to "disable" if you do not want your app to use asymmetric JWT authentication.
-  // To get the security benefit in advance, set this to "force" instead of "enable". 
-  "signed-install": "enable",
+  // By setting this field to "force", your app will be forced to use RS256 algorithm when authenticating install/uninstall callbacks.
+  // Make sure to opt-in to signed-install feature from the app descriptor file(atlassian-connect.json) to get this security benefit in advance.
+  "signed-install": "force",
 
   // This is the default environment. To change your app to use
   // a different env, set NODE_ENV (http://expressjs.com/api.html#app.configure)
@@ -163,6 +161,16 @@ The `./config.json` file contains all of the settings for the add-on server. Thi
     //     "adapter": "sequelize",
     //     "dialect": "sqlite",
     //     "storage": ":memory:"
+    //   },
+    //
+    //
+    // To use sqlite with a persistent file instead of an in-memory database, the following settings can be used,
+    // and will result in a store.db file being created in the working directory of the app:
+    // 
+    //   "store": {
+    //     "adapter": "sequelize",
+    //     "dialect": "sqlite3",
+    //     "url": "sqlite://./store.db"
     //   },
     //
     // To instead configure, say, a PostgreSQL store, the following could be
@@ -235,6 +243,13 @@ The `./config.json` file contains all of the settings for the add-on server. Thi
       // URL to you through the environment, so we tell atlassian-connect-express to use that value.
       "url": "$DATABASE_URL"
     },
+
+    // If your app supports multiple baseUrls,
+    // additional baseUrls can be added here so that it can be used to
+    // verify the `audience` claim during installation lifecycle callback.
+    "allowedBaseUrls" : [
+      "https://other-domain.herokuapp.com"
+    ],
 
     // Make sure that your add-on can only be registered by the hosts on
     // these domains.
