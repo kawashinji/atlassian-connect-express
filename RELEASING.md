@@ -1,7 +1,8 @@
 # Release process
 
 Pre-requisites: be an owner of https://npmjs.org/package/atlassian-connect-express
-[#help-connect](https://atlassian.slack.com/archives/CFGTZ99TL)
+
+( Slack: [#help-connect](https://atlassian.slack.com/archives/CFGTZ99TL) )
 
 1. Create a new release branch from master 
     ```
@@ -18,7 +19,12 @@ Pre-requisites: be an owner of https://npmjs.org/package/atlassian-connect-expre
     ```
     This will simply bump the `version` in the package.json file and commit the changes.
 
-4. Publish the new version
+4. Login to the public npm registry
     ```
-    npm publish
+      npm login --registry=https://registry.npmjs.org
+    ```
+
+5. Publish the new version
+    ```
+      npm publish
     ```
