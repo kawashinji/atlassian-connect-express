@@ -1,7 +1,7 @@
 # Release process
 
 Pre-requisites: be an owner of https://npmjs.org/package/atlassian-connect-express
-(#help-connect)
+[#help-connect](https://atlassian.slack.com/archives/CFGTZ99TL)
 
 1. Create a new release branch from master 
     ```
