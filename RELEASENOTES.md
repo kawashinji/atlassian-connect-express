@@ -1,5 +1,8 @@
 # Atlassian Connect for Express.js Release Notes
 
+## 7.4.7
+* Fix for global permissions check when there is neither project nor issue in the context
+
 ## 7.4.6
 * Add support to the authorization middleware for checking anonymous Jira user permissions
 
