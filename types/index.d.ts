@@ -25,7 +25,9 @@ interface Descriptor {
 
 interface Options {
     config: {
-        descriptorTransformer: (descriptor: Partial<Descriptor>, config: Config) => Descriptor
+        descriptorTransformer?: (descriptor: Partial<Descriptor>, config: Config) => Descriptor
+        development?: Partial<ConfigOptions>;
+        production?: Partial<ConfigOptions>;
     }
 }
 
@@ -49,6 +51,7 @@ interface ConfigOptions {
     hosts: string[];
     maxTokenAge: number;
     userAgent: string;
+    watch: boolean;
 }
 
 interface Config {
@@ -75,7 +78,7 @@ interface StoreAdapter {
     del(key: string, clientKey: string): Promise<void>;
     get(key: string, clientKey: string): Promise<any>;
     set(key: string, value: any, clientKey: string): Promise<any>;
-    getAllClientInfos(): Promise<AddOnFactory.ClientInfo>;
+    getAllClientInfos(): Promise<AddOnFactory.ClientInfo[]>;
 }
 
 type MiddlewareParameters = (request: express.Request, response: express.Response, next: express.NextFunction) => void;
@@ -124,6 +127,13 @@ type ModifyArgsOutput<
 type HostClientArgs<TOptions extends ModifyArgsOptions, TCallback extends Callback> = [
     TOptions, Headers, TCallback, string
 ];
+
+type BearerToken = {
+    access_token: string;
+    token_type: string;
+    expires_in: number;
+};
+
 declare class HostClient {
     constructor(addon: AddOn, context: { clientKey: string, userAccountId?: string } | Request, clientKey: string);
     addon: AddOn;
@@ -135,6 +145,8 @@ declare class HostClient {
     asUser(userKey: string): HostClient;
     asUserByAccountId: (userAccountId: string|number) => HostClient;
     createJwtPayload: (req: Request) => string;
+    getUserBearerToken: (scopes: string[], clientSettings: AddOnFactory.ClientInfo) => Promise<BearerToken>;
+
     defaults(): Request;
     cookie(): Cookie;
     jar(): CookieJar;
@@ -154,6 +166,7 @@ declare class AddOn extends EventEmitter {
     constructor(app: express.Application);
     
     verifyInstallation(): MiddlewareParameters;
+    authenticateInstall(): MiddlewareParameters;
     postInstallation(): (request: express.Request, response: express.Response) => void;
     middleware(): MiddlewareParameters;
     authenticate(skipQshVerification?: boolean): MiddlewareParameters;
@@ -206,14 +219,13 @@ declare class AddOn extends EventEmitter {
     httpClient(reqOrOpts: { clientKey: string, userAccountId?: string }): HostClient;
     httpClient(reqOrOpts: express.Request): HostClient;
 }
-interface Opts {config: {development?: Partial<ConfigOptions>, production?: Partial<ConfigOptions>}}
 
 interface FileNames {
     descriptorFilename?: string;
     configFileName?: string;
 }
 
-declare function AddOnFactory(app: express.Application, opts?: Opts, logger?: Console, fileNames?: FileNames | Callback, callback?: Callback): AddOn;
+declare function AddOnFactory(app: express.Application, opts?: Options, logger?: Console, fileNames?: FileNames | Callback, callback?: Callback): AddOn;
 
 declare namespace AddOnFactory {
     export type HostClient = InstanceType<typeof HostClient>;
@@ -232,6 +244,7 @@ declare namespace AddOnFactory {
     }
     export type AddOn = InstanceType<typeof AddOn>;
     export type AddOnFactory = typeof AddOnFactory;
+    export { BearerToken };
 }
 
 export = AddOnFactory;
