@@ -18,7 +18,8 @@ describe("Token verification using RS256 asymmetric signing", () => {
   let server;
   let useBodyParser = true;
   const additionalBaseUrl = "https://allowed.base.url";
-  const modifiedBaseUrlViaDescriptorTransformer = "https://transformed.base.url";
+  const modifiedBaseUrlViaDescriptorTransformer =
+    "https://transformed.base.url";
 
   function conditionalUseBodyParser(fn) {
     return function (req, res, next) {
@@ -63,10 +64,10 @@ describe("Token verification using RS256 asymmetric signing", () => {
               localBaseUrl: helper.addonBaseUrl,
               allowedBaseUrls: [additionalBaseUrl]
             },
-            descriptorTransformer(descriptor, config) {
+            descriptorTransformer(descriptor) {
               descriptor.baseUrl = modifiedBaseUrlViaDescriptorTransformer;
               return descriptor;
-            },
+            }
           }
         },
         logger,
@@ -362,7 +363,6 @@ describe("Token verification using RS256 asymmetric signing", () => {
       );
     });
   });
-
 
   it("should check for invalid audience on install", () => {
     return new Promise(resolve => {
