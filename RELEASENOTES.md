@@ -1,5 +1,8 @@
 # Atlassian Connect for Express.js Release Notes
 
+## 7.4.8
+* BaseUrl modified by the 'descriptorTransformer' function should be allowed for a JWT audience check
+
 ## 7.4.7
 * Fix for global permissions check when there is neither project nor issue in the context
 
