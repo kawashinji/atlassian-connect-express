@@ -29,7 +29,7 @@
     "atlassian-connect-validator": "0.0.9",
     "atlassian-jwt": "^2.0.1",
     "atlassian-oauth2": "^0.4.2",
-    "colors": "^1.4.0",
+    "colors": "1.4.0",
     "inquirer": "^7.3.3",
     "json5": "^2.1.3",
     "lodash": "^4.17.19",
