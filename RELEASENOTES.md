@@ -1,27 +1,39 @@
 # Atlassian Connect for Express.js Release Notes
 
+## 7.4.9
+
+* Pin the working version for colors.js:
+  https://www.theverge.com/2022/1/9/22874949/developer-corrupts-open-source-libraries-projects-affected
+
 ## 7.4.8
+
 * BaseUrl modified by the 'descriptorTransformer' function should be allowed for a JWT audience check
 
 ## 7.4.7
+
 * Fix for global permissions check when there is neither project nor issue in the context
 
 ## 7.4.6
+
 * Add support to the authorization middleware for checking anonymous Jira user permissions
 
 ## 7.4.4, 7.4.5
+
 * TS type signature fix: AddOnFactory
 
 ## 7.4.3
+
 * Add request context for installation middleware
 * Add test support for 1st party apps
 
 ## 7.4.1
+
 * `addon.authenticateInstall` middleware supports uninstall hook sent from an old version.
 
 ## 7.4.0
+
 * Removed default opt-in to signed-install feature: Manually opt-in from the app descriptor
-* Support multiple baseUrls when verifying install callback audience claim. 
+* Support multiple baseUrls when verifying install callback audience claim.
 
 ## 7.3.0
 
@@ -35,30 +47,38 @@
 * Add and adjust type signatures for store and client methods
 
 ## 7.1.8
+
 * Remove lockfiles
 * Fixed typo in auth error message
 
 ## 7.1.7
+
 * Patch to remove an unsupported descriptor field for bitbucket apps.
 * Fixing minor bug which fails to check bitbucket apps
 
 ## 7.1.5
+
 * Add config to control whether to use secure install hook only.
 * Add authorization middleware for Jira and Confluence
 
 ## 7.1.4
+
 * Update install lifecycle to check audience(app base url).
 
 ## 7.1.3
+
 * Fixed typescript definition
 
 ## 7.1.2
+
 * Removed `esModuleInterop` requirement from typescript typings
 
 ## 7.1.1
+
 * Fixed `@aws-sdk/client-dynamodb` dependency issue
 
 ## 7.1.0
+
 * Added dynamoDB storage adapter
 
 ## 7.0.1
@@ -131,6 +151,7 @@
 * (Atlassian internal only) Use staging oauth 2 authorization server when performing user impersonation against dev jira or confluence sites
 
 ## 4.1.0
+
 * Use {{appKey}} variable in atlassian-connect.json
 * Use the correct sqlite dialect string.
 * Set urijs to static version because of recent bug in library
@@ -240,6 +261,5 @@ now deprecated. Please use these parameters instead:
 
 * The token mechanism for iframe to add-on service communication is using JWT now. The old token mechanism continues to
 work, but is deprecated. Please see the updated [README.md](README.md) for details.
-
 * __Breaking Change__: We removed support for sessions in ACE, in favor of the standard JWT token approach.
 If your code relies on `req.session.*`, you will need to change that to `req.context.*` or `res.locals.*`.
