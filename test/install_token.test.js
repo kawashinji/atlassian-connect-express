@@ -54,7 +54,6 @@ describe("Token verification using RS256 asymmetric signing", () => {
         app,
         {
           config: {
-            "signed-install": "force",
             development: {
               store: {
                 adapter: "teststore",
@@ -100,7 +99,7 @@ describe("Token verification using RS256 asymmetric signing", () => {
       // default test routes
       const jwsRouteArgs = [
         JWS_AUTH_RESPONDER_PATH,
-        addon.authenticateInstall(),
+        addon.authenticate(),
         function (req, res) {
           const token = res.locals.token;
           res.send(token);
@@ -140,7 +139,7 @@ describe("Token verification using RS256 asymmetric signing", () => {
     };
   }
 
-  it("should not fallback to legacy authentication when signed-install is set to `force`", () => {
+  it("should not fallback to legacy install hook authentication", () => {
     return new Promise(resolve => {
       request(
         {
@@ -148,7 +147,7 @@ describe("Token verification using RS256 asymmetric signing", () => {
           method: "POST",
           json: _.extend({}, helper.installedPayload),
           headers: {
-            // Legacy install hook authentication using sharedSecret -> Fallback install hook authentication should work
+            // Legacy install hook authentication using sharedSecret -> Fallback install hook authentication should not work
             Authorization: `JWT ${helper.createJwtToken({
               method: "POST",
               path: "/installed"
@@ -157,8 +156,8 @@ describe("Token verification using RS256 asymmetric signing", () => {
         },
         (err, res, body) => {
           expect(res.statusCode).toEqual(401);
-          expect(body.message).toEqual(
-            "Invalid JWT: Could not get public key with keyId undefined"
+          expect(body).toEqual(
+            "Unexpected or missing JWT token, failed to verify installation."
           );
           resolve();
         }

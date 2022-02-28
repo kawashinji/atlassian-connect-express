@@ -1,5 +1,7 @@
 # Atlassian Connect for Express.js Release Notes
 
+## 7.5.0
+  `signed-install` enforcement: Only asymmetrically signed JWT is expected for install / uninstall hooks.
 ## 7.4.9
 
 * Pin the working version for colors.js:
