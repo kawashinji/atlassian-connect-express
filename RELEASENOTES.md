@@ -1,5 +1,9 @@
 # Atlassian Connect for Express.js Release Notes
 
+## 7.5.1
+
+* Updated README to move `expressErrorHandling` to correct location in config. Fixed broken link to express error handling URL docs.
+
 ## 7.5.0
   `signed-install` enforcement: Only asymmetrically signed JWT is expected for install / uninstall hooks.
 ## 7.4.9
