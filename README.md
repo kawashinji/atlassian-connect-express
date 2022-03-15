@@ -123,7 +123,7 @@ The `./config.json` file contains all of the settings for the add-on server. Thi
   // a different env, set NODE_ENV (http://expressjs.com/api.html#app.configure)
   "development": {
     // Set to true if your app contains a errorHandler middleware:
-    // http://expressjs.com/guide.html#error-handling
+    // https://expressjs.com/en/guide/error-handling.html
     "expressErrorHandling": false,
 
     // This is the port your Express server will listen on
