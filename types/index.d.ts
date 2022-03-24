@@ -161,30 +161,7 @@ declare class HostClient {
     patch: <T = any>(options: any, callback?: RequestCallback) => Promise<T>;
 
     usingJwt(): HostClient;
-    usingOAuth2(): HostClientConnectOnForge;
-}
-
-declare class HostClientConnectOnForge {
-    constructor(addon: AddOn, context: { clientKey: string, userAccountId?: string } | Request, clientKey: string);
-    addon: AddOn;
-    context: boolean;
-    clientKey: string;
-    oauth2: any;
-    userKey?: string; // for impersonatingClient
-
-    /* TODO: proper impersonation needs to be implemented for the Harmonised app (Connect on Forge)
-    asUser(userKey: string): HostClient;
-    asUserByAccountId: (userAccountId: string|number) => HostClient;
-    */
-
-    getBearerToken: (scopes: string[], clientSettings: AddOnFactory.ClientInfo) => Promise<BearerToken>;
-
-    get: <T = any>(options: any, callback?: RequestCallback) => Promise<T>;
-    post: <T = any>(options: any, callback?: RequestCallback) => Promise<T>;
-    put: <T = any>(options: any, callback?: RequestCallback) => Promise<T>;
-    del: <T = any>(options: any, callback?: RequestCallback) => Promise<T>;
-    head: <T = any>(options: any, callback?: RequestCallback) => Promise<T>;
-    patch: <T = any>(options: any, callback?: RequestCallback) => Promise<T>;
+    usingOAuth2(): HostClient;
 }
 
 declare class AddOn extends EventEmitter {
@@ -244,13 +221,6 @@ declare class AddOn extends EventEmitter {
 
     httpClient(reqOrOpts: { clientKey: string, userAccountId?: string }): HostClient;
     httpClient(reqOrOpts: express.Request): HostClient;
-
-    /**
-     * @param reqOrOpts either an expressRequest object or options
-     * @returns HostClientConnectOnForge a httpClientConnectOnForge
-     */
-     httpClientConnectOnForge(reqOrOpts: { clientKey: string, userAccountId?: string }): HostClientConnectOnForge;
-     httpClientConnectOnForge(reqOrOpts: express.Request): HostClientConnectOnForge;
 }
 
 interface FileNames {
@@ -262,7 +232,6 @@ declare function AddOnFactory(app: express.Application, opts?: Options, logger?:
 
 declare namespace AddOnFactory {
     export type HostClient = InstanceType<typeof HostClient>;
-    export type HostClientConnectOnForge = InstanceType<typeof HostClientConnectOnForge>;
     export interface ClientInfo {
         key: string,
         clientKey: string,
