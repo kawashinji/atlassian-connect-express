@@ -62,7 +62,13 @@ describe.each([["sequelize"], ["mongodb"], ["redis"], ["dynamodb"]])(
         request({
           url: `${helper.addonBaseUrl}/installed`,
           method: "POST",
-          json: helper.installedPayload
+          json: helper.installedPayload,
+          headers: {
+            Authorization: `JWT ${helper.createJwtTokenForInstall({
+              method: "POST",
+              path: "/installed"
+            })}`
+          }
         });
         res.status(200).end();
       });

@@ -48,7 +48,7 @@
     "@types/validator": "13.7.1",
     "body-parser": "1.19.0",
     "dynamodb-local": "0.0.31",
-    "eslint": "8.10.0",
+    "eslint": "8.11.0",
     "eslint-config-prettier": "8.4.0",
     "eslint-plugin-jest": "26.1.1",
     "eslint-plugin-prettier": "4.0.0",
