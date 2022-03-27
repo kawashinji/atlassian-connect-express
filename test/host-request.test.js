@@ -7,13 +7,16 @@ const mocks = require("./mocks");
 const config = require("../lib/internal/config");
 const HostRequest = require("../lib/internal/host-request");
 
+const TEST_REQUEST_URL = "/some/path/on/host";
+
 describe("Host Request", () => {
   const clientSettings = {
     clientKey: "test-client-key",
     oauthClientId: "oauth-client-id",
     sharedSecret: "shared-secret",
     baseUrl: "https://test.atlassian.net",
-    key: "client-settings-key"
+    key: "client-settings-key",
+    productType: "jira"
   };
 
   const createAddonConfig = function (opts) {
@@ -36,6 +39,12 @@ describe("Host Request", () => {
       addonConfig = {};
     }
 
+    let addonStore = mocks.store(clientSettings, clientSettings.clientKey);
+    if (addonConfig.clientSettingsOverride) {
+      const settings = addonConfig.clientSettingsOverride;
+      addonStore = mocks.store(settings, settings.clientKey);
+    }
+
     return {
       logger: require("./logger"),
       key: "test-addon-key",
@@ -43,7 +52,7 @@ describe("Host Request", () => {
       descriptor: {
         scopes: ["READ", "WRITE"]
       },
-      settings: mocks.store(clientSettings, clientSettings.clientKey)
+      settings: addonStore
     };
   };
 
@@ -59,12 +68,17 @@ describe("Host Request", () => {
     return new HostRequest(a, context, clientSettings.clientKey);
   }
 
-  function interceptRequest(testCallback, replyCallback, options) {
+  function interceptRequest(
+    testCallback,
+    replyCallback,
+    options,
+    errorCallback
+  ) {
     const opts = extend(
       {
         baseUrl: clientSettings.baseUrl,
         method: "get",
-        path: "/some/path/on/host",
+        path: TEST_REQUEST_URL,
         httpClientContext: {}
       },
       options || {}
@@ -78,13 +92,20 @@ describe("Host Request", () => {
     }
 
     let interceptor = nock(opts.baseUrl)[opts.method](opts.path);
+    if (opts.overrideMockBaseUrl) {
+      interceptor = nock(opts.overrideMockBaseUrl)[opts.method](opts.path);
+    }
 
     if (opts.qs) {
       interceptor = interceptor.query(opts.qs);
     }
     interceptor = interceptor.reply(replyCallback);
 
-    let httpClient = getHttpClient(opts.addonConfig, opts.httpClientContext);
+    let httpClient = getHttpClient(
+      opts.addonConfig,
+      opts.httpClientContext,
+      opts.clientSettingsOverride
+    );
 
     if (opts.httpClientWrapper) {
       httpClient = opts.httpClientWrapper(httpClient);
@@ -97,9 +118,12 @@ describe("Host Request", () => {
     delete httpClientOpts.requestPath;
     delete httpClientOpts.httpClientContext;
 
-    httpClient[opts.method](httpClientOpts, () => {
-      interceptor.done(); // will throw assertion if endpoint is not intercepted
-      testCallback();
+    httpClient[opts.method](httpClientOpts, err => {
+      if (interceptor.isDone()) {
+        testCallback();
+      } else {
+        errorCallback(err);
+      }
     });
   }
 
@@ -127,6 +151,30 @@ describe("Host Request", () => {
       }
     });
     interceptRequest(testCallback, replyCallback, opts);
+  }
+
+  function interceptRequestUsingJwt(testCallback, replyCallback, options) {
+    const opts = extend({}, options, {
+      httpClientWrapper(httpClient) {
+        return httpClient.usingJwt();
+      }
+    });
+    interceptRequest(testCallback, replyCallback, opts);
+  }
+
+  function interceptRequestUsingOauth2(
+    testCallback,
+    replyCallback,
+    errorCallback,
+    options
+  ) {
+    const opts = extend({}, options, {
+      httpClientWrapper(httpClient) {
+        return httpClient.usingOAuth2();
+      },
+      overrideMockBaseUrl: `${options.stargateUrl}/ex/${clientSettings.productType}/${clientSettings.cloudId}`
+    });
+    interceptRequest(testCallback, replyCallback, opts, errorCallback);
   }
 
   it("constructs non-null get request", () => {
@@ -293,7 +341,7 @@ describe("Host Request", () => {
             const expectedQsh = jwt.createQueryStringHash(
               jwt.fromExpressRequest({
                 method: "GET",
-                path: "/some/path/on/host",
+                path: TEST_REQUEST_URL,
                 query: { q: "~ text" }
               }),
               false,
@@ -301,7 +349,7 @@ describe("Host Request", () => {
             );
             expect(decoded.qsh).toEqual(expectedQsh);
           },
-          { path: "/some/path/on/host?q=~%20text" }
+          { path: `${TEST_REQUEST_URL}?q=~%20text` }
         );
       });
     });
@@ -323,7 +371,7 @@ describe("Host Request", () => {
             const expectedQsh = jwt.createQueryStringHash(
               jwt.fromExpressRequest({
                 method: "GET",
-                path: "/some/path/on/host",
+                path: TEST_REQUEST_URL,
                 query
               }),
               false,
@@ -331,7 +379,7 @@ describe("Host Request", () => {
             );
             expect(decoded.qsh).toEqual(expectedQsh);
           },
-          { path: "/some/path/on/host", qs: query }
+          { path: TEST_REQUEST_URL, qs: query }
         );
       });
     });
@@ -347,7 +395,7 @@ describe("Host Request", () => {
             );
           },
           {
-            requestPath: "https://test.atlassian.net/some/path/on/host"
+            requestPath: `https://test.atlassian.net${TEST_REQUEST_URL}`
           }
         );
       });
@@ -546,6 +594,230 @@ describe("Host Request", () => {
               done();
             }
           );
+      });
+    });
+  });
+
+  describe("UsingJwt() request", () => {
+    it("bitbucket request sets sub claim as clientKey", () => {
+      return new Promise(done => {
+        // eslint-disable-next-line no-unused-vars
+        interceptRequestUsingJwt(
+          done,
+          function () {
+            const jwtToken = this.req.headers.authorization.slice(4);
+            const clientKey = clientSettings.clientKey;
+            const decoded = jwt.decodeSymmetric(
+              jwtToken,
+              clientKey,
+              jwt.SymmetricAlgorithm.HS256,
+              true
+            );
+            expect(decoded.sub).toEqual(clientKey);
+          },
+          {
+            addonConfig: {
+              product: "bitbucket"
+            }
+          }
+        );
+      });
+    });
+
+    it("Request sets iss claim as the pre-existing key", () => {
+      return new Promise(done => {
+        // eslint-disable-next-line no-unused-vars
+        interceptRequestUsingJwt(done, function () {
+          const jwtToken = this.req.headers.authorization.slice(4);
+          const clientKey = clientSettings.clientKey;
+          const decoded = jwt.decodeSymmetric(
+            jwtToken,
+            clientKey,
+            jwt.SymmetricAlgorithm.HS256,
+            true
+          );
+          expect(decoded.iss).toEqual(clientSettings.key);
+        });
+      });
+    });
+
+    it("get request has correct JWT qsh for encoded parameter", () => {
+      return new Promise(done => {
+        // eslint-disable-next-line no-unused-vars
+        interceptRequestUsingJwt(
+          done,
+          function () {
+            const jwtToken = this.req.headers.authorization.slice(4);
+            const decoded = jwt.decodeSymmetric(
+              jwtToken,
+              clientSettings.clientKey,
+              jwt.SymmetricAlgorithm.HS256,
+              true
+            );
+            const expectedQsh = jwt.createQueryStringHash(
+              jwt.fromExpressRequest({
+                method: "GET",
+                path: TEST_REQUEST_URL,
+                query: { q: "~ text" }
+              }),
+              false,
+              helper.productBaseUrl
+            );
+            expect(decoded.qsh).toEqual(expectedQsh);
+          },
+          { path: `${TEST_REQUEST_URL}?q=~%20text` }
+        );
+      });
+    });
+
+    it("get request has correct JWT qsh for encoded parameter passed via qs field", () => {
+      return new Promise(done => {
+        const query = { q: "~ text" };
+        // eslint-disable-next-line no-unused-vars
+        interceptRequestUsingJwt(
+          done,
+          function () {
+            const jwtToken = this.req.headers.authorization.slice(4);
+            const decoded = jwt.decodeSymmetric(
+              jwtToken,
+              clientSettings.clientKey,
+              jwt.SymmetricAlgorithm.HS256,
+              true
+            );
+            const expectedQsh = jwt.createQueryStringHash(
+              jwt.fromExpressRequest({
+                method: "GET",
+                path: TEST_REQUEST_URL,
+                query
+              }),
+              false,
+              helper.productBaseUrl
+            );
+            expect(decoded.qsh).toEqual(expectedQsh);
+          },
+          { path: TEST_REQUEST_URL, qs: query }
+        );
+      });
+    });
+
+    it("get request for absolute url on host has Authorization header", () => {
+      return new Promise(done => {
+        // eslint-disable-next-line no-unused-vars
+        interceptRequestUsingJwt(
+          done,
+          function () {
+            expect(this.req.headers.authorization.startsWith("JWT ")).toBe(
+              true
+            );
+          },
+          {
+            requestPath: `https://test.atlassian.net${TEST_REQUEST_URL}`
+          }
+        );
+      });
+    });
+
+    it("post request has correct url", () => {
+      return new Promise(done => {
+        // eslint-disable-next-line no-unused-vars
+        interceptRequestUsingJwt(
+          done,
+          function () {
+            expect(this.req.headers.authorization.startsWith("JWT ")).toBe(
+              true
+            );
+          },
+          { method: "post" }
+        );
+      });
+    });
+  });
+
+  describe("UsingAuth2() requests", () => {
+    it("should provide the valid error message when there is no cloudId stored in clientSettings", () => {
+      return new Promise(done => {
+        const authServiceMock = mocks.oauth2Identity.service();
+        // eslint-disable-next-line no-unused-vars
+        interceptRequestUsingOauth2(
+          done,
+          () => {
+            authServiceMock.done();
+          },
+          err => {
+            expect(err.message).toBe("clientSettings.cloudId must be defined");
+            done(err);
+          },
+          {}
+        );
+      });
+    });
+
+    it("does not add JWT authorization header, but a Bearer authorization header with the stargate host", () => {
+      return new Promise(done => {
+        const stargateBaseUrl = "https://api.atlassian.com";
+
+        const authServiceMock = mocks.oauth2Identity.service();
+        // eslint-disable-next-line no-unused-vars
+        interceptRequestUsingOauth2(
+          done,
+          function () {
+            authServiceMock.done();
+            expect(this.req.headers.authorization.startsWith("JWT")).toBe(
+              false
+            );
+            expect(this.req.headers.authorization.startsWith("Bearer")).toBe(
+              true
+            );
+            expect(this.req.headers.host).toBe(
+              stargateBaseUrl.replace("https://", "")
+            );
+          },
+          err => {
+            done(err);
+          },
+          {
+            stargateUrl: stargateBaseUrl,
+            addonConfig: {
+              clientSettingsOverride: extend(_.cloneDeep(clientSettings), {
+                cloudId: "cloud-id"
+              })
+            }
+          }
+        );
+      });
+    });
+
+    it("does add the non-production stargate host for jira-dev instance", () => {
+      return new Promise(done => {
+        const oauth0proxy = "https://auth.stg.atlassian.com";
+        const stargateBaseUrl = "https://api.stg.atlassian.com";
+
+        const authServiceMock = mocks.oauth2Identity.service(
+          undefined,
+          oauth0proxy
+        );
+        // eslint-disable-next-line no-unused-vars
+        interceptRequestUsingOauth2(
+          done,
+          function () {
+            authServiceMock.done();
+            expect(this.req.headers.host).toBe(
+              stargateBaseUrl.replace("https://", "")
+            );
+          },
+          err => {
+            done(err);
+          },
+          {
+            stargateUrl: stargateBaseUrl,
+            addonConfig: {
+              clientSettingsOverride: extend(_.cloneDeep(clientSettings), {
+                baseUrl: "https://test-atlassian.jira-dev.com",
+                cloudId: "cloud-id"
+              })
+            }
+          }
+        );
       });
     });
   });
