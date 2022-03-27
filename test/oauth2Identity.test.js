@@ -1,4 +1,4 @@
-const OAuth2 = require("../lib/internal/oauth2-Identity");
+const OAuth2 = require("../lib/internal/oauth2-identity");
 const mocks = require("./mocks");
 const moment = require("moment");
 const _ = require("lodash");
