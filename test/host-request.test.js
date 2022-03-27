@@ -177,6 +177,13 @@ describe("Host Request", () => {
     interceptRequest(testCallback, replyCallback, opts, errorCallback);
   }
 
+  function mockStargateRequest(clientSettingsOverride) {
+    const stargateBaseUrl = "https://api.atlassian.com";
+    const requestBaseUrl = `${stargateBaseUrl}/ex/${clientSettingsOverride.productType}/${clientSettingsOverride.cloudId}`;
+    nock(requestBaseUrl).post(TEST_REQUEST_URL).reply(200);
+    mocks.oauth2Identity.service();
+  }
+
   it("constructs non-null get request", () => {
     return new Promise(done => {
       interceptRequest(done, 200);
@@ -601,7 +608,6 @@ describe("Host Request", () => {
   describe("UsingJwt() request", () => {
     it("bitbucket request sets sub claim as clientKey", () => {
       return new Promise(done => {
-        // eslint-disable-next-line no-unused-vars
         interceptRequestUsingJwt(
           done,
           function () {
@@ -626,7 +632,6 @@ describe("Host Request", () => {
 
     it("Request sets iss claim as the pre-existing key", () => {
       return new Promise(done => {
-        // eslint-disable-next-line no-unused-vars
         interceptRequestUsingJwt(done, function () {
           const jwtToken = this.req.headers.authorization.slice(4);
           const clientKey = clientSettings.clientKey;
@@ -643,7 +648,6 @@ describe("Host Request", () => {
 
     it("get request has correct JWT qsh for encoded parameter", () => {
       return new Promise(done => {
-        // eslint-disable-next-line no-unused-vars
         interceptRequestUsingJwt(
           done,
           function () {
@@ -673,7 +677,6 @@ describe("Host Request", () => {
     it("get request has correct JWT qsh for encoded parameter passed via qs field", () => {
       return new Promise(done => {
         const query = { q: "~ text" };
-        // eslint-disable-next-line no-unused-vars
         interceptRequestUsingJwt(
           done,
           function () {
@@ -702,7 +705,6 @@ describe("Host Request", () => {
 
     it("get request for absolute url on host has Authorization header", () => {
       return new Promise(done => {
-        // eslint-disable-next-line no-unused-vars
         interceptRequestUsingJwt(
           done,
           function () {
@@ -719,7 +721,6 @@ describe("Host Request", () => {
 
     it("post request has correct url", () => {
       return new Promise(done => {
-        // eslint-disable-next-line no-unused-vars
         interceptRequestUsingJwt(
           done,
           function () {
@@ -737,7 +738,7 @@ describe("Host Request", () => {
     it("should provide the valid error message when there is no cloudId stored in clientSettings", () => {
       return new Promise(done => {
         const authServiceMock = mocks.oauth2Identity.service();
-        // eslint-disable-next-line no-unused-vars
+
         interceptRequestUsingOauth2(
           done,
           () => {
@@ -757,7 +758,7 @@ describe("Host Request", () => {
         const stargateBaseUrl = "https://api.atlassian.com";
 
         const authServiceMock = mocks.oauth2Identity.service();
-        // eslint-disable-next-line no-unused-vars
+
         interceptRequestUsingOauth2(
           done,
           function () {
@@ -796,7 +797,7 @@ describe("Host Request", () => {
           undefined,
           oauth0proxy
         );
-        // eslint-disable-next-line no-unused-vars
+
         interceptRequestUsingOauth2(
           done,
           function () {
@@ -818,6 +819,114 @@ describe("Host Request", () => {
             }
           }
         );
+      });
+    });
+
+    describe("Form requests", () => {
+      it("post request with form sets form data", () => {
+        return new Promise(done => {
+          const clientSettingsOverride = extend(_.cloneDeep(clientSettings), {
+            cloudId: "cloud-id"
+          });
+
+          mockStargateRequest(clientSettingsOverride);
+
+          getHttpClient({ clientSettingsOverride }, {})
+            .usingOAuth2()
+            .post({
+              url: TEST_REQUEST_URL,
+              file: [
+                "file content",
+                {
+                  filename: "filename",
+                  ContentType: "text/plain"
+                }
+              ]
+            })
+            .then(request => {
+              expect(request.file).toEqual([
+                "file content",
+                { filename: "filename", ContentType: "text/plain" }
+              ]);
+              done();
+            });
+        });
+      });
+
+      it("post requests using multipartFormData have the right format", () => {
+        return new Promise(done => {
+          const clientSettingsOverride = extend(_.cloneDeep(clientSettings), {
+            cloudId: "cloud-id"
+          });
+
+          mockStargateRequest(clientSettingsOverride);
+
+          const someData = "some data";
+          getHttpClient({ clientSettingsOverride }, {})
+            .usingOAuth2()
+            .post({
+              url: TEST_REQUEST_URL,
+              multipartFormData: {
+                file: [someData, { filename: "myattachmentagain.png" }]
+              }
+            })
+            .then(request => {
+              expect(request._form._valueLength).toEqual(someData.length);
+              done();
+            });
+        });
+      });
+
+      it("post requests using the deprecated form parameter still have the right format", () => {
+        return new Promise(done => {
+          const clientSettingsOverride = extend(_.cloneDeep(clientSettings), {
+            cloudId: "cloud-id"
+          });
+
+          mockStargateRequest(clientSettingsOverride);
+
+          const someData = "some data";
+          getHttpClient({ clientSettingsOverride }, {})
+            .usingOAuth2()
+            .post({
+              url: TEST_REQUEST_URL,
+              form: {
+                file: [someData, { filename: "myattachmentagain.png" }]
+              }
+            })
+            .then(
+              request => {
+                expect(request._form._valueLength).toEqual(someData.length);
+                done();
+              },
+              err => {
+                console.log(err);
+              }
+            );
+        });
+      });
+
+      it("post requests using urlEncodedFormData have the right format", () => {
+        return new Promise(done => {
+          const clientSettingsOverride = extend(_.cloneDeep(clientSettings), {
+            cloudId: "cloud-id"
+          });
+
+          mockStargateRequest(clientSettingsOverride);
+
+          getHttpClient({ clientSettingsOverride }, {})
+            .usingOAuth2()
+            .post({
+              url: TEST_REQUEST_URL,
+              urlEncodedFormData: {
+                param1: "value1"
+              }
+            })
+            .then(request => {
+              expect(request.body.toString()).toBe("param1=value1");
+              done();
+            });
+        });
       });
     });
   });
