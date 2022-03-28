@@ -24,7 +24,7 @@ describe("OAuth2 for Forge app through oauth0 proxy (https://auth.atlassian.com)
 
   describe("#getBearerToken", () => {
     it("calls OAuth service", async () => {
-      const authServiceMock = mocks.oauth2Identity.service();
+      const authServiceMock = mocks.oauth2Forge.service();
 
       const addon = mockAddon();
       const token = await new OAuth2(addon).getBearerToken(clientSettings);
@@ -33,7 +33,7 @@ describe("OAuth2 for Forge app through oauth0 proxy (https://auth.atlassian.com)
     });
 
     it("calls staging OAuth service for jira-dev instances", async () => {
-      const authServiceMock = mocks.oauth2Identity.service(
+      const authServiceMock = mocks.oauth2Forge.service(
         null,
         "https://auth.stg.atlassian.com"
       );
@@ -48,7 +48,7 @@ describe("OAuth2 for Forge app through oauth0 proxy (https://auth.atlassian.com)
     });
 
     it("stores token in cache", async () => {
-      const authServiceMock = mocks.oauth2Identity.service();
+      const authServiceMock = mocks.oauth2Forge.service();
 
       const addon = mockAddon();
       const oauth2 = new OAuth2(addon);
@@ -62,11 +62,11 @@ describe("OAuth2 for Forge app through oauth0 proxy (https://auth.atlassian.com)
         cacheKey,
         clientSettings.clientKey
       );
-      expect(cachedToken.token).toEqual(mocks.oauth2Identity.ACCESS_TOKEN);
+      expect(cachedToken.token).toEqual(mocks.oauth2Forge.ACCESS_TOKEN);
     });
 
     it("retrieves token from cache", async () => {
-      const authServiceMock = mocks.oauth2Identity.service();
+      const authServiceMock = mocks.oauth2Forge.service();
 
       const addon = mockAddon();
       const oauth2 = new OAuth2(addon);
@@ -92,7 +92,7 @@ describe("OAuth2 for Forge app through oauth0 proxy (https://auth.atlassian.com)
     });
 
     it("bypasses token cache if expired", async () => {
-      mocks.oauth2Identity.service();
+      mocks.oauth2Forge.service();
 
       const addon = mockAddon();
       const oauth2 = new OAuth2(addon);

@@ -19,7 +19,7 @@ module.exports = (function () {
       ACCESS_TOKEN: OAUTH_ACCESS_TOKEN
     },
 
-    oauth2Identity: {
+    oauth2Forge: {
       service(accessToken, url) {
         return nock(url || "https://auth.atlassian.com")
           .post("/oauth/token")

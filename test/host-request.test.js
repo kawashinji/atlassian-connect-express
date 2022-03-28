@@ -181,7 +181,7 @@ describe("Host Request", () => {
     const stargateBaseUrl = "https://api.atlassian.com";
     const requestBaseUrl = `${stargateBaseUrl}/ex/${clientSettingsOverride.productType}/${clientSettingsOverride.cloudId}`;
     nock(requestBaseUrl).post(TEST_REQUEST_URL).reply(200);
-    mocks.oauth2Identity.service();
+    mocks.oauth2Forge.service();
   }
 
   it("constructs non-null get request", () => {
@@ -737,7 +737,7 @@ describe("Host Request", () => {
   describe("UsingAuth2() requests", () => {
     it("should provide the valid error message when there is no cloudId stored in clientSettings", () => {
       return new Promise(done => {
-        const authServiceMock = mocks.oauth2Identity.service();
+        const authServiceMock = mocks.oauth2Forge.service();
 
         interceptRequestUsingOauth2(
           done,
@@ -757,7 +757,7 @@ describe("Host Request", () => {
       return new Promise(done => {
         const stargateBaseUrl = "https://api.atlassian.com";
 
-        const authServiceMock = mocks.oauth2Identity.service();
+        const authServiceMock = mocks.oauth2Forge.service();
 
         interceptRequestUsingOauth2(
           done,
@@ -793,7 +793,7 @@ describe("Host Request", () => {
         const oauth0proxy = "https://auth.stg.atlassian.com";
         const stargateBaseUrl = "https://api.stg.atlassian.com";
 
-        const authServiceMock = mocks.oauth2Identity.service(
+        const authServiceMock = mocks.oauth2Forge.service(
           undefined,
           oauth0proxy
         );
