@@ -1,9 +1,9 @@
-const OAuth2 = require("../lib/internal/oauth2-identity");
+const OAuth2 = require("../lib/internal/oauth2-forge");
 const mocks = require("./mocks");
 const moment = require("moment");
 const _ = require("lodash");
 
-describe("OAuth2 through oauth0 proxy (https://auth.atlassian.com)", () => {
+describe("OAuth2 for Forge app through oauth0 proxy (https://auth.atlassian.com)", () => {
   const clientSettings = {
     clientKey: "test-client-key",
     sharedSecret: "shared-secret",
