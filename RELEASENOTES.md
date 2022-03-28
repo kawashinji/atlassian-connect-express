@@ -1,5 +1,8 @@
 # Atlassian Connect for Express.js Release Notes
 
+## 7.5.2
+* Introduce usingOauth2() method for HostClient in order to make the oauth2 signed request back to the host (a.k.a this is for the harmanised app on Forge platform)
+
 ## 7.5.1
 
 * Updated README to move `expressErrorHandling` to correct location in config. Fixed broken link to express error handling URL docs.
