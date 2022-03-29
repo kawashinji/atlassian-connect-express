@@ -735,7 +735,7 @@ describe("Host Request", () => {
   });
 
   describe("UsingAuth2() requests", () => {
-    it("should provide the valid error message when there is no cloudId stored in clientSettings", () => {
+    it("should provide the valid error message when oauth2 is not enabled or detected", () => {
       return new Promise(done => {
         const authServiceMock = mocks.oauth2Forge.service();
 
@@ -745,7 +745,11 @@ describe("Host Request", () => {
             authServiceMock.done();
           },
           err => {
-            expect(err.message).toBe("clientSettings.cloudId must be defined");
+            expect(
+              err.message.startsWith(
+                "Has this connect app really been migrated into Forge?"
+              )
+            ).toBe(true);
             done(err);
           },
           {}
@@ -780,7 +784,8 @@ describe("Host Request", () => {
             stargateUrl: stargateBaseUrl,
             addonConfig: {
               clientSettingsOverride: extend(_.cloneDeep(clientSettings), {
-                cloudId: "cloud-id"
+                cloudId: "cloud-id",
+                authentication: "oauth2"
               })
             }
           }
@@ -814,7 +819,8 @@ describe("Host Request", () => {
             addonConfig: {
               clientSettingsOverride: extend(_.cloneDeep(clientSettings), {
                 baseUrl: "https://test-atlassian.jira-dev.com",
-                cloudId: "cloud-id"
+                cloudId: "cloud-id",
+                authentication: "oauth2"
               })
             }
           }
@@ -826,7 +832,8 @@ describe("Host Request", () => {
       it("post request with form sets form data", () => {
         return new Promise(done => {
           const clientSettingsOverride = extend(_.cloneDeep(clientSettings), {
-            cloudId: "cloud-id"
+            cloudId: "cloud-id",
+            authentication: "oauth2"
           });
 
           mockStargateRequest(clientSettingsOverride);
@@ -856,7 +863,8 @@ describe("Host Request", () => {
       it("post requests using multipartFormData have the right format", () => {
         return new Promise(done => {
           const clientSettingsOverride = extend(_.cloneDeep(clientSettings), {
-            cloudId: "cloud-id"
+            cloudId: "cloud-id",
+            authentication: "oauth2"
           });
 
           mockStargateRequest(clientSettingsOverride);
@@ -880,7 +888,8 @@ describe("Host Request", () => {
       it("post requests using the deprecated form parameter still have the right format", () => {
         return new Promise(done => {
           const clientSettingsOverride = extend(_.cloneDeep(clientSettings), {
-            cloudId: "cloud-id"
+            cloudId: "cloud-id",
+            authentication: "oauth2"
           });
 
           mockStargateRequest(clientSettingsOverride);
@@ -909,7 +918,8 @@ describe("Host Request", () => {
       it("post requests using urlEncodedFormData have the right format", () => {
         return new Promise(done => {
           const clientSettingsOverride = extend(_.cloneDeep(clientSettings), {
-            cloudId: "cloud-id"
+            cloudId: "cloud-id",
+            authentication: "oauth2"
           });
 
           mockStargateRequest(clientSettingsOverride);
