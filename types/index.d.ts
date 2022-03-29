@@ -140,6 +140,8 @@ declare class HostClient {
     context: boolean;
     clientKey: string;
     oauth2: any;
+    oauth2Forge: any;
+    usingForgeOAuth2Flag: boolean;
     userKey?: string; // for impersonatingClient
 
     asUser(userKey: string): HostClient;

@@ -112,7 +112,7 @@ describe("OAuth2 for Forge app through oauth0 proxy (https://auth.atlassian.com)
       await addon.settings.set(cacheKey, cachedToken, clientSettings.clientKey);
       const token = await new OAuth2(addon).getBearerToken(clientSettings);
 
-      expect(token).toEqual(mocks.oauth2.ACCESS_TOKEN);
+      expect(token).toEqual(mocks.oauth2Forge.ACCESS_TOKEN);
     });
   });
 });
