@@ -54,7 +54,7 @@
     "express": "4.17.3",
     "extend": "3.0.2",
     "jest": "27.5.1",
-    "mongodb-memory-server": "6.9.6",
+    "mongodb-memory-server": "8.4.2",
     "ngrok": "3.4.1",
     "nock": "13.2.1",
     "prettier": "2.5.1",
