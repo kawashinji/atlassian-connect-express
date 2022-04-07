@@ -3,7 +3,7 @@ const mocks = require("./mocks");
 const moment = require("moment");
 const _ = require("lodash");
 
-describe("OAuth2", () => {
+describe("OAuth2 (User Impersonation)", () => {
   const clientSettings = {
     clientKey: "test-client-key",
     sharedSecret: "shared-secret",

@@ -19,6 +19,15 @@ module.exports = (function () {
       ACCESS_TOKEN: OAUTH_ACCESS_TOKEN
     },
 
+    oauth2Forge: {
+      service(accessToken, url) {
+        return nock(url || "https://auth.atlassian.com")
+          .post("/oauth/token")
+          .reply(200, accessToken || OAUTH_ACCESS_TOKEN);
+      },
+      ACCESS_TOKEN: OAUTH_ACCESS_TOKEN
+    },
+
     // eslint-disable-next-line no-unused-vars
     store(clientSettings, clientKey) {
       const _store = {};

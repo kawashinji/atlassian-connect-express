@@ -140,12 +140,15 @@ declare class HostClient {
     context: boolean;
     clientKey: string;
     oauth2: any;
+    oauth2Forge: any;
+    isUsingForgeOAuth2: boolean;
     userKey?: string; // for impersonatingClient
 
     asUser(userKey: string): HostClient;
     asUserByAccountId: (userAccountId: string|number) => HostClient;
     createJwtPayload: (req: Request) => string;
     getUserBearerToken: (scopes: string[], clientSettings: AddOnFactory.ClientInfo) => Promise<BearerToken>;
+    getBearerToken: (clientSettings: AddOnFactory.ClientInfo) => Promise<BearerToken>;
 
     defaults(): Request;
     cookie(): Cookie;
@@ -159,6 +162,11 @@ declare class HostClient {
     del: <T = any>(options: any, callback?: RequestCallback) => Promise<T>;
     head: <T = any>(options: any, callback?: RequestCallback) => Promise<T>;
     patch: <T = any>(options: any, callback?: RequestCallback) => Promise<T>;
+
+    usingJwt(): HostClient;
+    clientCredentialsGrant(): HostClient;
+
+    isClientCredentialsGrantAvailable(): Promise<boolean>;
 }
 
 declare class AddOn extends EventEmitter {
